@@ -14,7 +14,7 @@
           @input="handlerinput"
           :rules='/^1\d{10}$/'
           msg_err='手机号输入不合法，请输入11位手机号'></hminput>
-          <hminput type="password" :value="users.password"></hminput>
+          <hminput type="password" v-model="users.password"></hminput>
       </div>
       <p class="tips">
         没有账号？
@@ -28,6 +28,8 @@
 <script>
 import hmbutton from '@/components/hm_button.vue'
 import hminput from '@/components/hm_input.vue'
+// 引入登陆api的方法
+import { userLogin } from '@/api/users.js'
 export default {
   data () {
     return {
@@ -44,6 +46,19 @@ export default {
   methods: {
     login (event) {
     //   console.log(event)
+      userLogin(this.users)
+        .then(res => {
+        //   console.log(res)
+          if (res.data.message === '登录成功') {
+
+          } else {
+            this.$toast.fail(res.data.message)
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$toast.fail('登陆失败，请重试')
+        })
     },
     handlerinput (data) {
     //   console.log(data)
