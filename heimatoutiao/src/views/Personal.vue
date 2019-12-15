@@ -100,8 +100,9 @@ a{
   //   display: flex;
   //   justify-content: center;
   // }
-  // /deep/.exitBtn{
-  //   margin: 0 auto!important;
-  // }
+
 }
+/deep/.exitBtn{
+    margin: 50px auto!important;
+  }
 </style>

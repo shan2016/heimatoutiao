@@ -1,18 +1,22 @@
 <template>
-   <div class="editPersonal">
-       <hmheader title="编辑个人信息">
-           <span class="iconfont iconjiantou2" slot="left" @click="$router.back()">
-           </span>
-           <!-- <span slot='right'>退出</span> -->
-       </hmheader>
-       <div class="head">
-           <img :src="current.head_img" alt="">
-           <van-uploader :after-read="afterRead"></van-uploader>
-       </div>
-       <hmcell title="昵称" :desc="current.nickname"></hmcell>
-       <hmcell title="密码" :desc="current.password"></hmcell>
-       <hmcell title="性别" :desc="current.gender"></hmcell>
-   </div>
+  <div class="editPersonal">
+    <hmheader title="编辑个人信息">
+      <span class="iconfont iconjiantou2" slot="left" @click="$router.back()"></span>
+      <!-- <span slot='right'>退出</span> -->
+    </hmheader>
+    <div class="head">
+      <img :src="current.head_img" alt />
+      <van-uploader :after-read="afterRead"></van-uploader>
+    </div>
+    <hmcell title="昵称" :desc="current.nickname" @click="nickshow=!nickshow"></hmcell>
+    <!-- 以组件的方式来使用dialog -->
+    <van-dialog v-model="nickshow" title="标题" show-cancel-button @confirm="updateNickname">
+      <!-- 如果需要使用ref的方式获取数据，不能添加clearable -->
+      <van-field required :value="current.nickname" label="昵称" placeholder="请输入昵称" ref="nickname" />
+    </van-dialog>
+    <hmcell title="密码" :desc="current.password"></hmcell>
+    <hmcell title="性别" :desc="current.gender"></hmcell>
+  </div>
 </template>
 
 <script>
@@ -29,7 +33,8 @@ export default {
     }
   },
   components: {
-    hmheader, hmcell
+    hmheader,
+    hmcell
   },
   async mounted () {
     this.id = this.$route.params.id
@@ -37,9 +42,11 @@ export default {
     if (res.data.message === '获取成功') {
       this.current = res.data.data
       if (this.current.head_img) {
-        this.current.head_img = localStorage.getItem('hm_40_baseURL') + this.current.head_img
+        this.current.head_img =
+          localStorage.getItem('hm_40_baseURL') + this.current.head_img
       } else {
-        this.current.head_img = localStorage.getItem('hm_40_baseURL') + '/uploads/image/default.png'
+        this.current.head_img =
+          localStorage.getItem('hm_40_baseURL') + '/uploads/image/default.png'
       }
     } else {
       this.$toast.fail('获取用户信息失败，请重试')
@@ -47,7 +54,7 @@ export default {
   },
   methods: {
     async afterRead (file) {
-    //   console.log(file)
+      //   console.log(file)
       let formdata = new FormData()
       formdata.append('file', file.file)
       let res = await uploadFile(formdata)
@@ -56,10 +63,23 @@ export default {
         console.log(res1)
         if (res1.data.message === '修改成功') {
           this.$toast.success('修改用户头像成功')
-          this.current.head_img = localStorage.getItem('hm_40_baseURL') + res.data.data.url
+          this.current.head_img =
+            localStorage.getItem('hm_40_baseURL') + res.data.data.url
         } else {
           this.$toast.success('修改用户头像失败，请重试')
         }
+      }
+    },
+    //   修改昵称
+    async updateNickname () {
+    //   console.log(this.$refs.nickname.$refs.input.value)
+      let nickname = this.$refs.nickname.$refs.input.value
+      let res = await editUserInfo(this.id, { nickname })
+      if (res.data.message === '修改成功') {
+        this.$toast.fail('获取昵称成功')
+        this.current.nickname = nickname
+      } else {
+        this.$toast.fail('获取昵称失败')
       }
     }
   }
@@ -80,7 +100,7 @@ export default {
     height: 100 / 360 * 100vw;
     border-radius: 50%;
   }
-   /deep/.van-uploader__upload {
+  /deep/.van-uploader__upload {
     width: 100 / 360 * 100vw;
     height: 100 / 360 * 100vw;
   }
