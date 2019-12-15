@@ -1,0 +1,96 @@
+<template>
+   <div class="editPersonal">
+       <hmheader title="编辑个人信息">
+           <span class="iconfont iconjiantou2" slot="left" @click="$router.back()">
+           </span>
+           <!-- <span slot='right'>退出</span> -->
+       </hmheader>
+       <div class="head">
+           <img :src="current.head_img" alt="">
+           <van-uploader :after-read="afterRead"></van-uploader>
+       </div>
+       <hmcell title="昵称" :desc="current.nickname"></hmcell>
+       <hmcell title="密码" :desc="current.password"></hmcell>
+       <hmcell title="性别" :desc="current.gender"></hmcell>
+   </div>
+</template>
+
+<script>
+import hmheader from '@/components/hm_header.vue'
+import hmcell from '@/components/hm_cell.vue'
+import { uploadFile } from '@/api/uploadFile.js'
+import { getUserInfo, editUserInfo } from '@/api/users.js'
+export default {
+  data () {
+    return {
+      id: '',
+      current: {},
+      nickshow: false
+    }
+  },
+  components: {
+    hmheader, hmcell
+  },
+  async mounted () {
+    this.id = this.$route.params.id
+    let res = await getUserInfo(this.id)
+    if (res.data.message === '获取成功') {
+      this.current = res.data.data
+      if (this.current.head_img) {
+        this.current.head_img = localStorage.getItem('hm_40_baseURL') + this.current.head_img
+      } else {
+        this.current.head_img = localStorage.getItem('hm_40_baseURL') + '/uploads/image/default.png'
+      }
+    } else {
+      this.$toast.fail('获取用户信息失败，请重试')
+    }
+  },
+  methods: {
+    async afterRead (file) {
+    //   console.log(file)
+      let formdata = new FormData()
+      formdata.append('file', file.file)
+      let res = await uploadFile(formdata)
+      if (res.data.message === '文件上传成功') {
+        let res1 = await editUserInfo(this.id, { head_img: res.data.data.url })
+        console.log(res1)
+        if (res1.data.message === '修改成功') {
+          this.$toast.success('修改用户头像成功')
+          this.current.head_img = localStorage.getItem('hm_40_baseURL') + res.data.data.url
+        } else {
+          this.$toast.success('修改用户头像失败，请重试')
+        }
+      }
+    }
+  }
+}
+</script>
+
+<style lang='less' scoped>
+.head {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+
+  img {
+    display: block;
+    width: 100 / 360 * 100vw;
+    height: 100 / 360 * 100vw;
+    border-radius: 50%;
+  }
+   /deep/.van-uploader__upload {
+    width: 100 / 360 * 100vw;
+    height: 100 / 360 * 100vw;
+  }
+  /deep/.van-uploader {
+    // 实现任意元素居中
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+  }
+}
+</style>

@@ -14,3 +14,12 @@ export const getUserInfo = (id) => {
     url: `/user/${id}`
   })
 }
+
+// 编辑用户信息
+export const editUserInfo = (id, data) => {
+  return axios({
+    method: 'post',
+    url: `/user_update/${id}`,
+    data
+  })
+}
