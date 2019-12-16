@@ -17,7 +17,7 @@
       <hmcell title="我的收藏" desc="文章/视频"></hmcell>
       <hmcell title="设置"></hmcell>
       <div class="exit">
-       <hmbutton text="退出" class="exitBtn"></hmbutton>
+       <hmbutton text="退出" class="exitBtn" @click="exitApp"></hmbutton>
       </div>
   </div>
 </template>
@@ -54,6 +54,14 @@ export default {
         console.log(err)
         this.$toast.fail('获取数据失败')
       })
+  },
+  methods: {
+    exitApp () {
+      // console.log('111')
+      localStorage.removeItem('heima_40_token')
+      localStorage.removeItem('hm_40_baseURL')
+      this.$router.push({ name: 'index' })
+    }
   }
 }
 </script>

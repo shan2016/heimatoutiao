@@ -23,3 +23,11 @@ export const editUserInfo = (id, data) => {
     data
   })
 }
+// 实现用户注册
+export const userRegister = (data) => {
+  return axios({
+    method: 'post',
+    url: `/register`,
+    data
+  })
+}
