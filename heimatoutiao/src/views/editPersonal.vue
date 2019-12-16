@@ -14,7 +14,12 @@
       <!-- 如果需要使用ref的方式获取数据，不能添加clearable -->
       <van-field required :value="current.nickname" label="昵称" placeholder="请输入昵称" ref="nickname" />
     </van-dialog>
-    <hmcell title="密码" :desc="current.password"></hmcell>
+    <hmcell title="密码" :desc="current.password" type="password" @click="passshow=!passshow"></hmcell>
+    <van-dialog v-model="passshow" title="修改密码" show-cancel-button @confirm='updatePassword' :before-close='beforeClose'>
+        <!-- 如果需要使用ref的方式获取数据，不能添加clearable -->
+      <van-field required label="原密码" placeholder="请输入原密码" ref='oldPwd'/>
+      <van-field required label="新密码" placeholder="请输入新密码" ref='newPwd'/>
+    </van-dialog>
     <hmcell title="性别" :desc="current.gender"></hmcell>
   </div>
 </template>
@@ -29,7 +34,8 @@ export default {
     return {
       id: '',
       current: {},
-      nickshow: false
+      nickshow: false,
+      passshow: false
     }
   },
   components: {
@@ -53,6 +59,7 @@ export default {
     }
   },
   methods: {
+    //   修改头像
     async afterRead (file) {
       //   console.log(file)
       let formdata = new FormData()
@@ -76,12 +83,46 @@ export default {
       let nickname = this.$refs.nickname.$refs.input.value
       let res = await editUserInfo(this.id, { nickname })
       if (res.data.message === '修改成功') {
-        this.$toast.fail('获取昵称成功')
+        this.$toast.fail('修改昵称成功')
         this.current.nickname = nickname
       } else {
-        this.$toast.fail('获取昵称失败')
+        this.$toast.fail('修改昵称失败')
+      }
+    },
+    // 修改密码
+    async updatePassword () {
+      let oldPwd = this.$refs.oldPwd.$refs.input.value
+      if (this.current.password === oldPwd) {
+        let password = this.$refs.newPwd.$refs.input.value
+        if (!/\w{3,16}/.test(password)) {
+          this.$toast.fail('请输入3~16位的新密码')
+          return
+        }
+        let res = await editUserInfo(this.id, { password })
+        if (res.data.message === '修改成功') {
+          this.$toast.success('修改成功')
+          localStorage.removeItem('heima_40_token')
+          localStorage.removeItem('hm_40_baseURL')
+          this.$router.push({ name: 'login' })
+        }
+      } else {
+        this.$toast.fail('原始密码输入不正确')
+      }
+    },
+    beforeClose (action, done) {
+      let oldPwd = this.$refs.oldPwd.$refs.input.value
+      let password = this.$refs.newPwd.$refs.input.value
+      if (action === 'confirm' && this.current.password !== oldPwd) {
+        this.$toast.fail('原始密码输入不正确')
+        done(false)
+      } else if (action === 'confirm' && !/\w{3,16}/.test(password)) {
+        this.$toast.fail('请输入3~16位的新密码')
+        done(false)
+      } else {
+        done()
       }
     }
+
   }
 }
 </script>
