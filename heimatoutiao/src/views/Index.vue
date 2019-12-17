@@ -11,12 +11,20 @@
       <van-tab :title="cate.name" v-for="cate in cateList" :key="cate.id">
         <!-- 上拉加载 -->
         <van-list
-        :immediate-check='false'
-        :offset='300'
-        v-model="cate.loading" :finished="cate.finished"
-        finished-text="没有更多了" @load="onLoad">
-          <!-- 动态渲染当前栏目的新闻数据 -->
+          :immediate-check="false"
+          :offset="300"
+          v-model="cate.loading"
+          :finished="cate.finished"
+          finished-text="没有更多了"
+          @load="onLoad"
+        >
+          <!-- 下拉 刷新 -->
+          <van-pull-refresh
+          v-model="cate.isLoading"
+           @refresh="onRefresh">
+            <!-- 动态渲染当前栏目的新闻数据 -->
           <articleblock v-for="post in cate.postList" :key="post.id" :post="post"></articleblock>
+          </van-pull-refresh>
         </van-list>
       </van-tab>
     </van-tabs>
@@ -61,7 +69,8 @@ export default {
           pageIndex: 1, // 当前栏目的页码
           pageSize: 8, // 当前栏目每页所显示的新闻数量
           loading: false,
-          finished: false
+          finished: false,
+          isLoading: false
         }
         // return console.log(value)
       })
@@ -95,8 +104,15 @@ export default {
       setTimeout(() => {
         this.getPostList()
       }, 3000)
+    },
+    onRefresh () {
+      this.cateList[this.active].pageIndex = 1
+      this.cateList[this.active].finished = false
+      setTimeout(() => {
+        this.cateList[this.active].postList.length = 0
+        this.getPostList()
+      }, 1000)
     }
-
   }
 }
 </script>
