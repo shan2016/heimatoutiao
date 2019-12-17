@@ -26,7 +26,7 @@ var router = new VueRouter({
       component: EditPersonal
     }, {
       name: 'index',
-      path: '/index',
+      path: '/',
       component: Index
     },
     {
