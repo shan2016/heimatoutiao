@@ -51,9 +51,8 @@ export default {
         //   console.log(res)
           if (res.data.message === '登录成功') {
             localStorage.setItem('heima_40_token', res.data.data.token)
-            this.$router.push({
-              path: `/personal/${res.data.data.user.id}`
-            })
+            localStorage.setItem('heima_40_id', res.data.data.user.id)
+            this.$router.push({ path: `/personal/${res.data.data.user.id}` })
           } else {
             this.$toast.fail(res.data.message)
           }

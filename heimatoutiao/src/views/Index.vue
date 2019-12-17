@@ -5,7 +5,7 @@
       <div class="center">
         <van-icon name="search" />&nbsp;&nbsp;&nbsp;搜索商品
       </div>
-      <van-icon name="manager-o" class="icon" />
+      <van-icon name="manager-o" class="icon" @click="jump"/>
     </div>
     <van-tabs v-model="active" sticky swipeable>
       <van-tab :title="cate.name" v-for="cate in cateList" :key="cate.id">
@@ -112,6 +112,9 @@ export default {
         this.cateList[this.active].postList.length = 0
         this.getPostList()
       }, 1000)
+    },
+    jump () {
+      this.$router.push({ path: `Personal/${window.localStorage.getItem('heima_40_id')}` })
     }
   }
 }
