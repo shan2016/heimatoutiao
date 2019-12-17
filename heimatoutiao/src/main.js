@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 
 // 引入提示框插件
-import { Toast, Icon, Uploader, Dialog, Field, Picker, Tab, Tabs } from 'vant'
+import { Toast, Icon, Uploader, Dialog, Field, Picker, Tab, Tabs, List } from 'vant'
 
 import '@/styles/reset.css'
 
@@ -16,6 +16,7 @@ Vue.use(Field)
 Vue.use(Picker)
 Vue.use(Tab)
 Vue.use(Tabs)
+Vue.use(List)
 
 Vue.config.productionTip = false
 

@@ -8,9 +8,17 @@
       <van-icon name="manager-o" class="icon" />
     </div>
     <van-tabs v-model="active" sticky swipeable>
-      <van-tab :title="cate.name" v-for="cate in cateList" :key='cate.id'>
-        <articleblock  v-for='post in cate.postList' :key='post.id' :post='post'></articleblock>
-        </van-tab>
+      <van-tab :title="cate.name" v-for="cate in cateList" :key="cate.id">
+        <!-- 上拉加载 -->
+        <van-list
+        :immediate-check='false'
+        :offset='300'
+        v-model="cate.loading" :finished="cate.finished"
+        finished-text="没有更多了" @load="onLoad">
+          <!-- 动态渲染当前栏目的新闻数据 -->
+          <articleblock v-for="post in cate.postList" :key="post.id" :post="post"></articleblock>
+        </van-list>
+      </van-tab>
     </van-tabs>
     <div class="newsList"></div>
   </div>
@@ -51,7 +59,9 @@ export default {
           ...value,
           postList: [], // 当前栏目的新闻列表数据
           pageIndex: 1, // 当前栏目的页码
-          pageSize: 5 // 当前栏目每页所显示的新闻数量
+          pageSize: 8, // 当前栏目每页所显示的新闻数量
+          loading: false,
+          finished: false
         }
         // return console.log(value)
       })
@@ -67,10 +77,26 @@ export default {
         pageSize: this.cateList[this.active].pageSize,
         category: this.cateList[this.active].id
       })
-      console.log(res)
+
+      this.cateList[this.active].postList.push(...res.data.data)
+
+      this.cateList[this.active].loading = false
+      this.cateList[this.active].isLoading = false
+      if (res.data.data.length < this.cateList[this.active].pageSize) {
+        this.cateList[this.active].finished = true
+      }
+      // console.log(res)
       // 新闻数据存储在当前栏目的postList中，每个栏目都有一个单独的文章列表数组
-      this.cateList[this.active].postList = res.data.data
+      // this.cateList[this.active].postList = res.data.data;
+    },
+    onLoad () {
+      // 异步更新数据
+      this.cateList[this.active].pageIndex++
+      setTimeout(() => {
+        this.getPostList()
+      }, 3000)
     }
+
   }
 }
 </script>
