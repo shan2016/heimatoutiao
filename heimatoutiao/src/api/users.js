@@ -45,3 +45,17 @@ export const unFollowUser = (id) => {
     url: `/user_unfollow/${id}`
   })
 }
+
+// 点赞文章
+export const likeArticleById = (id) => {
+  return axios({
+    url: `/post_like/${id}`
+  })
+}
+
+// 收藏文章
+export const collectArticleById = (id) => {
+  return axios({
+    url: `/post_star/${id}`
+  })
+}

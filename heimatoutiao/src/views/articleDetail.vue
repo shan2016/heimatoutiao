@@ -16,7 +16,7 @@
       <div class="content" v-html='article.content' v-if='article.type===1'></div>
       <video v-if='article.type===2' :src='article.content' controls></video>
       <div class="opt">
-        <span class="like">
+        <span class="like" :class="{active:article.has_like}" @click='likeThisArticle'>
           <van-icon name="good-job-o" />{{article.like_length}}
         </span>
         <span class="chat">
@@ -40,13 +40,18 @@
       </div>
       <div class="more">更多跟帖</div>
     </div>
+    <hmcommentArea :article='article'></hmcommentArea>
   </div>
 </template>
 
 <script>
 import { getArticleDetail } from '@/api/article.js'
-import { followUser, unFollowUser } from '@/api/users.js'
+import { followUser, unFollowUser, likeArticleById } from '@/api/users.js'
+import hmcommentArea from '@/components/hm_commentArea.vue'
 export default {
+  components: {
+    hmcommentArea
+  },
   data () {
     return {
       article: {}
@@ -55,9 +60,10 @@ export default {
   async mounted () {
     // 根据id获取文章的详情，实现文章详情的动态渲染
     let res = await getArticleDetail(this.$route.params.id)
-    console.log(res)
+    // console.log(res)
     if (res.status === 200) {
       this.article = res.data.data
+      console.log(this.article)
     }
   },
   methods: {
@@ -73,6 +79,18 @@ export default {
       this.$toast.success(res.data.message)
       // 修改元素所绑定的数据,实现页面元素效果的刷新
       this.article.has_follow = !this.article.has_follow
+    },
+    async likeThisArticle () {
+      let res = await likeArticleById(this.article.id)
+      console.log(res)
+      // 修改元素所绑定的状态，已点赞还是未点赞
+      this.article.has_like = !this.article.has_like
+      if (res.data.message === '点赞成功') {
+        this.article.like_length++
+      } else if (res.data.message === '取消成功') {
+        this.article.like_length--
+      }
+      this.$toast.success(res.data.message)
     }
   }
 }
@@ -213,5 +231,8 @@ export default {
         width: 100%!important;
         display: block;
     }
+}
+.articaldetail{
+  padding-bottom: 50px;
 }
 </style>
