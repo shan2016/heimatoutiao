@@ -59,3 +59,10 @@ export const collectArticleById = (id) => {
     url: `/post_star/${id}`
   })
 }
+
+// 获取我的关注
+export const getMyFollow = (id) => {
+  return axios({
+    url: `/user_follows`
+  })
+}

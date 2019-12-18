@@ -8,6 +8,7 @@ import EditPersonal from '@/views/editPersonal.vue'
 import Index from '@/views/Index.vue'
 import Register from '@/views/Register.vue'
 import ArticleDetail from '@/views/articleDetail.vue'
+import MyFollow from '@/views/myFollow.vue'
 Vue.use(VueRouter)
 
 var router = new VueRouter({
@@ -39,6 +40,11 @@ var router = new VueRouter({
       name: 'articleDetail',
       path: '/articleDetail/:id',
       component: ArticleDetail
+    },
+    {
+      name: 'MyFollow',
+      path: '/myFollow',
+      component: MyFollow
     }
 
   ]
