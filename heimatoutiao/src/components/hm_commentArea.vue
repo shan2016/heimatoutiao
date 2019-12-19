@@ -2,15 +2,15 @@
   <div class="comment">
     <div class="addcomment" v-show='!isFocus'>
       <input type="text" placeholder="写跟帖" @focus="handlerFocus" />
-      <span class="comment">
+      <span class="comment" @click="$router.push({path: `/comments/${article.id}`})">
         <i class="iconfont iconpinglun-"></i>
-        <em>100</em>
+        <em>{{article.comment_length}}</em>
       </span>
       <i class="iconfont iconshoucang" :class="{active:article.has_star}" @click="collectThisArticle"></i>
       <i class="iconfont iconfenxiang"></i>
     </div>
     <div class="inputcomment" v-show='isFocus'>
-        <textarea  ref='commtext' rows="5"></textarea>
+        <textarea  ref='commtext' rows="5" :placeholder="placeholder"></textarea>
         <div>
             <span>发送</span>
             <span @click='isFocus=false'>取消</span>
@@ -22,25 +22,32 @@
 <script>
 import { collectArticleById } from '@/api/users.js'
 export default {
-  props: ['article'],
+  props: ['article','replayObj'],
   data () {
     return {
-      isFocus: false
+      isFocus: false,
+      placeholder: ''
     }
   },
   methods: {
     //   获取焦点时触发
     handlerFocus () {
-      this.isFocus = !this.isFocus
+      this.isFocus = true
       setTimeout(() => {
         this.$refs.commtext.focus()
       }, 1)
     },
     async collectThisArticle () {
       let res = await collectArticleById(this.article.id)
-      console.log(res)
+      // console.log(res)
       this.$toast.success(res.data.message)
       this.article.has_star = !this.article.has_star
+    }
+  },
+  watch:{
+    replayObj(){
+      this.isFocus=true
+       this.placeholder = '@' + this.replayObj.user.nickname
     }
   }
 }

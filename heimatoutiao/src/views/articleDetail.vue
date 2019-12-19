@@ -27,16 +27,16 @@
     <!-- 精彩跟帖 -->
     <div class="keeps">
       <h2>精彩跟帖</h2>
-      <div class="item">
+      <div class="item" v-for="item in commentList" :key="item.id">
         <div class="head">
-          <img src="../assets/logo.png" alt />
+          <img :src="item.user.head_img" alt />
           <div>
-            <p>火星网友</p>
+            <p>{{item.user.nickname}}</p>
             <span>2小时前</span>
           </div>
           <span>回复</span>
         </div>
-        <div class="text">文章说得很有道理</div>
+        <div class="text">{{item.content}}</div>
       </div>
       <div class="more">更多跟帖</div>
     </div>
@@ -46,7 +46,7 @@
 
 <script>
 import { getArticleDetail } from '@/api/article.js'
-import { followUser, unFollowUser, likeArticleById } from '@/api/users.js'
+import { followUser, unFollowUser, likeArticleById, getCommentsById } from '@/api/users.js'
 import hmcommentArea from '@/components/hm_commentArea.vue'
 export default {
   components: {
@@ -54,7 +54,8 @@ export default {
   },
   data () {
     return {
-      article: {}
+      article: {},
+      commentList: []
     }
   },
   async mounted () {
@@ -63,7 +64,25 @@ export default {
     // console.log(res)
     if (res.status === 200) {
       this.article = res.data.data
-      console.log(this.article)
+      // console.log(this.article)
+      // 再次发送请求获取文章的评论数据
+      let res2 = await getCommentsById(this.article.id, { pageSize: 10 })
+      // console.log(res2)
+      if (res2.status === 200) {
+        // debugger;
+        this.commentList = res2.data.data.map(value => {
+          if (value.user.head_img == '') {
+            value.user.head_img = localStorage.getItem('hm_40_baseURL') + '/uploads/image/IMG1576412848836.jpeg'
+            // console.log('111')
+          } else {
+           value.user.head_img = localStorage.getItem('hm_40_baseURL') + value.user.head_img
+          //  console.log('222')
+          }
+          // console.log(value.user.head_img)
+          return value
+        })
+        // console.log(this.commentList)
+      }
     }
   },
   methods: {
