@@ -13,7 +13,7 @@
         <textarea  ref='commtext' rows="5" :placeholder="placeholder"></textarea>
         <div>
             <span>发送</span>
-            <span @click='isFocus=false'>取消</span>
+            <span @click='cancelReplay'>取消</span>
         </div>
     </div>
   </div>
@@ -42,12 +42,18 @@ export default {
       // console.log(res)
       this.$toast.success(res.data.message)
       this.article.has_star = !this.article.has_star
+    },
+    cancelReplay(){
+      this.isFocus=false
+      this.$emit('resetValue')
     }
   },
   watch:{
     replayObj(){
-      this.isFocus=true
+      if(this.replayObj){
+       this.isFocus=true
        this.placeholder = '@' + this.replayObj.user.nickname
+      }
     }
   }
 }
