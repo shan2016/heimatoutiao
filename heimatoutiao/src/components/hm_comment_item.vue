@@ -1,13 +1,13 @@
 <template>
  <!-- 将单个评论封装为组件 -->
-  <div class="commentitem">   
-    <mycomment v-if='comment.parent' :comment='comment.parent'></mycomment>
+  <div class="commentitem">
+    <mycomment v-if='comment.parent' :comment='comment.parent'@replayComment='sendComment'></mycomment>
     <div class="head">
       <div>
         <span class="cname">{{comment.user.nickname}}</span>
         <span>2小时前</span>
       </div>
-      <span>回复</span>
+      <span @click="sendComment(comment)">回复</span>
     </div>
     <div class="text">{{comment.content}}</div>
   </div>
@@ -15,8 +15,13 @@
 
 <script>
 export default {
-    name:'mycomment',
-    props:['comment']
+  name: 'mycomment',
+  props: ['comment'],
+  methods: {
+    sendComment (comment) {
+      this.$emit('replayComment', comment)
+    }
+  }
 }
 </script>
 

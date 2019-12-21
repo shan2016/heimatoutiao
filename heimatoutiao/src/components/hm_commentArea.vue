@@ -12,7 +12,7 @@
     <div class="inputcomment" v-show='isFocus'>
         <textarea  ref='commtext' rows="5" :placeholder="placeholder"></textarea>
         <div>
-            <span>发送</span>
+            <span @click="send">发送</span>
             <span @click='cancelReplay'>取消</span>
         </div>
     </div>
@@ -21,8 +21,9 @@
 
 <script>
 import { collectArticleById } from '@/api/users.js'
+import { sendComment } from '@/api/article.js'
 export default {
-  props: ['article','replayObj'],
+  props: ['article', 'replayObj'],
   data () {
     return {
       isFocus: false,
@@ -43,16 +44,33 @@ export default {
       this.$toast.success(res.data.message)
       this.article.has_star = !this.article.has_star
     },
-    cancelReplay(){
-      this.isFocus=false
+    cancelReplay () {
+      this.isFocus = false
       this.$emit('resetValue')
+    },
+    async send () {
+      let data = {
+        content: this.$refs.commtext.value
+      }
+      // console.log(data)
+      if (this.replayObj) {
+        data.parent_id = this.replayObj.id
+      }
+      let res = await sendComment(this.article.id, data)
+      console.log(res)
+      if (res.data.message === '评论发布成功') {
+        this.$toast.success(res.data.message)
+        this.$refs.commtext.value = ''
+        this.isFocus = false
+        this.$emit('refresh')
+      }
     }
   },
-  watch:{
-    replayObj(){
-      if(this.replayObj){
-       this.isFocus=true
-       this.placeholder = '@' + this.replayObj.user.nickname
+  watch: {
+    replayObj () {
+      if (this.replayObj) {
+        this.isFocus = true
+        this.placeholder = '@' + this.replayObj.user.nickname
       }
     }
   }

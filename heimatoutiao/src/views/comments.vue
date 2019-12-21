@@ -35,7 +35,7 @@ import myheader from '@/components/hm_header.vue'
 import commentItem from '@/components/hm_comment_item.vue'
 import commentArea from '@/components/hm_commentArea.vue'
 import { getArticleDetail } from '@/api/article.js'
-import { getCommentsById} from '@/api/users.js'
+import { getCommentsById } from '@/api/users.js'
 export default {
   components: {
     myheader, commentItem, commentArea
@@ -56,11 +56,11 @@ export default {
       let id = this.$route.params.id
       // 获取当前文章数据
       let post = await getArticleDetail(id)
-      console.log(post)
+      // console.log(post)
       this.article = post.data.data
       // 获取当前文章的评论
       let res = await getCommentsById(id, { pageSize: 50 })
-      console.log(res)
+      // console.log(res)
       if (res.status === 200) {
         this.commentList = res.data.data.map(value => {
           value.user.head_img = localStorage.getItem('hm_40_baseURL') + value.user.head_img
